@@ -1,0 +1,38 @@
+/* Dashboard Styles */
+.dashboard-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.pet-card:hover {
+  transform: scale(1.05);
+}
+
+.nav-item:hover {
+  background-color: rgba(0, 168, 168, 0.1);
+}
+
+.button:hover {
+  background-color: #008a8a;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px !important;
+  }
+  .main {
+    margin-left: 60px !important;
+  }
+  .content {
+    grid-template-columns: 1fr !important;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .favorites-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
