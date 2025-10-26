@@ -11,7 +11,7 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private final Key key = Keys.hmacShaKeyFor("super_secret_furandfeathers_key_123456".getBytes());
+    private final Key key = Keys.hmacShaKeyFor("super_secret_furandfeathers_key_for_jwt_256bits_minimum_required_by_spec".getBytes());
     private final long EXPIRATION = 1000 * 60 * 60 * 24; // 24 hours
 
     public String generateToken(String email, Map<String, Object> claims) {

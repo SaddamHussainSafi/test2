@@ -3,7 +3,6 @@ package com.furandfeathers.controller;
 import com.furandfeathers.entity.User;
 import com.furandfeathers.repository.UserRepository;
 import com.furandfeathers.repository.PetRepository;
-import com.furandfeathers.util.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.HashMap;
 
 @RestController
@@ -43,6 +41,6 @@ public class ShelterController {
 
     @GetMapping
     public List<User> getShelters(@RequestParam(required = false) Boolean verified) {  
-        return userRepository.findByRole(Role.SHELTER);
+        return userRepository.findAll();
     }
 }

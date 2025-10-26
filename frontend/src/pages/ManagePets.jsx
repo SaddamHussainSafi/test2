@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api';
+import api from '../api/apiClient';
 
 export default function ManagePets() {
   const { user } = useContext(AuthContext);
@@ -71,15 +71,6 @@ export default function ManagePets() {
       }
     }
   };
-
-  if (user?.role !== 'shelter') {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h1>Access Denied</h1>
-        <p>Only shelter accounts can manage pets.</p>
-      </div>
-    );
-  }
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>

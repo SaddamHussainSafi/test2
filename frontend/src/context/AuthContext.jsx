@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       const data = await fetchCurrentUser();
       if (data) {
         // make role lowercase for frontend convenience
-        const normalized = { ...data, role: (data.role || '').toString().toLowerCase() };
+        const normalized = { ...data };
         localStorage.setItem('user', JSON.stringify(normalized));
         setUser(normalized);
       }
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, token) => {
-    const normalizedUser = { ...userData, role: (userData.role || '').toString().toLowerCase() };
+    const normalizedUser = { ...userData };
     localStorage.setItem("user", JSON.stringify(normalizedUser));
     localStorage.setItem("token", token);
     setUser(normalizedUser);

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import api from "../api";
+import api from "../api/apiClient";
 import "../App.css";
 
 const PetCard = ({ pet, onDeleted }) => {

@@ -1,6 +1,5 @@
 package com.furandfeathers.entity;
 
-import com.furandfeathers.util.Role;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +22,7 @@ public class User {
     private String name;
     private String email;
     
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String password;
     
     private String provider; // "local" or "google"
@@ -33,9 +32,6 @@ public class User {
     @com.fasterxml.jackson.annotation.JsonIgnore
     public String getProvider() { return provider; }
     private String picture;
-
-    @Enumerated(EnumType.STRING)
-    private Role role; // SUPER_ADMIN, ADMIN, SHELTER, ADOPTER
 
     private Boolean verified;
 

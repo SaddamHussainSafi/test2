@@ -6,7 +6,6 @@ import com.furandfeathers.dto.PetResponse;
 import com.furandfeathers.entity.User;
 import com.furandfeathers.repository.PetRepository;
 import com.furandfeathers.repository.UserRepository;
-import com.furandfeathers.util.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,7 +54,7 @@ public class PetController {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        System.out.println("User: " + user.getEmail() + ", Role: " + user.getRole());
+        System.out.println("User: " + user.getEmail());
 
         // Allow any authenticated user to add a pet. Previously only shelters were allowed.
         // If you want to enforce role-based logic later, add checks here.

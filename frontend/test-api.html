@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Pet API</title>
+</head>
+<body>
+    <h1>Pet API Test</h1>
+    <button onclick="testAddPet()">Test Add Pet</button>
+    <button onclick="testToken()">Test Token Verification</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function testToken() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('output').textContent = 'No token found in localStorage';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/verify-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ token })
+                });
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('output').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function testAddPet() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('output').textContent = 'No token found in localStorage';
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('name', 'Test Pet');
+                formData.append('breed', 'Test Breed');
+                formData.append('age', 2);
+                formData.append('description', 'A test pet');
+                formData.append('status', 'AVAILABLE');
+
+                console.log('Sending FormData with Authorization header...');
+                console.log('Token:', token.substring(0, 50) + '...');
+
+                const response = await fetch('http://localhost:8080/api/pets', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Do NOT set Content-Type - let browser do it
+                    },
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+                const text = await response.text();
+                document.getElementById('output').textContent = `Status: ${response.status}\n\nResponse:\n${text}`;
+            } catch (error) {
+                document.getElementById('output').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

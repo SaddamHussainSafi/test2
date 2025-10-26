@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api';
+import api from '../api/apiClient';
 import PetCard from '../components/PetCard';
 
 const MyPets = () => {
@@ -12,17 +12,7 @@ const MyPets = () => {
   useEffect(() => {
     const fetchMyPets = async () => {
       try {
-        let endpoint = '/pets/my-pets';
-
-        // For shelters, get their owned pets
-        if (user?.role === 'shelter') {
-          endpoint = '/pets/my-pets';
-        } else {
-          // For adopters, get pets they've applied for or adopted
-          endpoint = '/applications/my-applications';
-        }
-
-        const response = await api.get(endpoint);
+        const response = await api.get('/pets/my-pets');
         setPets(response.data);
         setError(null);
       } catch (error) {
@@ -78,13 +68,10 @@ const MyPets = () => {
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <h1>
-        {user.role === 'shelter' ? 'My Shelter Pets' : 'My Pet Applications'}
+        My Pets
       </h1>
       <p>
-        {user.role === 'shelter'
-          ? 'Manage the pets at your shelter'
-          : 'Track your pet adoption applications and adopted pets'
-        }
+        Manage the pets you've added
       </p>
 
       {pets.length === 0 ? (
@@ -97,10 +84,7 @@ const MyPets = () => {
         }}>
           <h3>No pets found</h3>
           <p>
-            {user.role === 'shelter'
-              ? 'You haven\'t added any pets yet. Start by adding your first pet!'
-              : 'You haven\'t applied for any pets yet. Browse available pets to get started!'
-            }
+            You haven't added any pets yet. Start by adding your first pet!
           </p>
         </div>
       ) : (

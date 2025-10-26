@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api';
+import api from '../api/apiClient';
 import PetCard from './PetCard';
 
 export default function FeaturedPets() {

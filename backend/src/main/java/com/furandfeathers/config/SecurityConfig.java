@@ -1,6 +1,5 @@
 package com.furandfeathers.config;
 
-import com.furandfeathers.config.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

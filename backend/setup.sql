@@ -12,34 +12,35 @@ DROP TABLE IF EXISTS users;
 
 -- Create the users table
 CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(120) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
-  role ENUM('SUPER_ADMIN', 'ADMIN', 'SHELTER', 'ADOPTER') DEFAULT 'ADOPTER',
+  provider VARCHAR(50),
+  picture VARCHAR(255),
   verified BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create the pets table
 CREATE TABLE pets (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
   age INT,
   breed VARCHAR(100),
   description TEXT,
   image_url VARCHAR(255),
   status ENUM('AVAILABLE', 'PENDING', 'ADOPTED') DEFAULT 'AVAILABLE',
-  shelter_id INT,
+  shelter_id BIGINT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (shelter_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Create the adoption_applications table
 CREATE TABLE adoption_applications (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  adopter_id INT NOT NULL,
-  pet_id INT NOT NULL,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  adopter_id BIGINT NOT NULL,
+  pet_id BIGINT NOT NULL,
   status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -49,9 +50,9 @@ CREATE TABLE adoption_applications (
 
 -- Create the messages table
 CREATE TABLE messages (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  sender_id INT NOT NULL,
-  receiver_id INT NOT NULL,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  sender_id BIGINT NOT NULL,
+  receiver_id BIGINT NOT NULL,
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sender_id) REFERENCES users(id),
@@ -60,9 +61,9 @@ CREATE TABLE messages (
 
 -- Create the favorites table
 CREATE TABLE favorites (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  adopter_id INT,
-  pet_id INT,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  adopter_id BIGINT,
+  pet_id BIGINT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (adopter_id) REFERENCES users(id),
   FOREIGN KEY (pet_id) REFERENCES pets(id)
@@ -70,21 +71,20 @@ CREATE TABLE favorites (
 
 -- Create the activity_log table
 CREATE TABLE activity_log (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT,
   action VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Insert the Super Admin
-INSERT INTO users (id, name, email, password, role, verified)
+INSERT INTO users (id, name, email, password, verified)
 VALUES (
   1,
   'Super Admin',
   'superadmin@furandfeathers.com',
   '$2a$10$h7r5sZbK9mAqx3uJ3bO1MuAErhLp3Jg6p7S21vfrF5o6T0Wb08TfS',
-  'SUPER_ADMIN',
   true
 )
 ON DUPLICATE KEY UPDATE id = id;
@@ -109,7 +109,6 @@ SELECT u.id AS shelter_id,
        SUM(p.status = 'AVAILABLE') AS available_pets
 FROM users u
 LEFT JOIN pets p ON u.id = p.shelter_id
-WHERE u.role = 'SHELTER'
 GROUP BY u.id;
 
 CREATE VIEW admin_overview AS
@@ -133,19 +132,19 @@ END$$
 DELIMITER ;
 
 -- Optional seed data
-INSERT INTO users (id, name, email, password, role, verified)
+INSERT INTO users (id, name, email, password, verified)
 VALUES
-(5, 'Test Shelter', 'test@shelter.com', '$2a$10$dummyhash', 'SHELTER', true)
+(5, 'Test Shelter', 'test@shelter.com', '$2a$10$dummyhash', true)
 ON DUPLICATE KEY UPDATE id = id;
 
-INSERT INTO users (id, name, email, password, role, verified)
+INSERT INTO users (id, name, email, password, verified)
 VALUES
-(2, 'Happy Paws Shelter', 'happy@shelter.com', '$2a$10$dummyhash', 'SHELTER', true)
+(2, 'Happy Paws Shelter', 'happy@shelter.com', '$2a$10$dummyhash', true)
 ON DUPLICATE KEY UPDATE id = id;
 
-INSERT INTO users (name, email, password, role, verified)
+INSERT INTO users (name, email, password, verified)
 VALUES
-('John Doe', 'john@adopter.com', '$2a$10$dummyhash', 'ADOPTER', true);
+('John Doe', 'john@adopter.com', '$2a$10$dummyhash', true);
 
 INSERT INTO pets (name, breed, age, status, shelter_id, image_url)
 VALUES

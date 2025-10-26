@@ -4,7 +4,6 @@ import com.furandfeathers.entity.User;
 import com.furandfeathers.repository.UserRepository;
 import com.furandfeathers.service.GoogleAuthService;
 import com.furandfeathers.service.JwtService;
-import com.furandfeathers.util.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,24 +35,16 @@ public class AuthController {
             return Map.of("status", "error", "message", "Email already exists");
         }
 
-        // --- get and validate role ---
-        String roleString = req.getOrDefault("role", "ADOPTER").toUpperCase();
-        if (!roleString.equals("ADOPTER") && !roleString.equals("SHELTER")) {
-            roleString = "ADOPTER"; // fallback if someone sends something else
-        }
-        Role role = Role.valueOf(roleString);
-
         User user = User.builder()
             .name(req.get("name"))
             .email(email)
             .password(encoder.encode(req.get("password")))
             .provider("local")
-            .role(role)
             .build();
 
         userRepository.save(user);
     // ensure role claim is a simple string so JWT payload is predictable for frontend
-    String token = jwtService.generateToken(user.getEmail(), Map.of("role", user.getRole().toString()));
+    String token = jwtService.generateToken(user.getEmail(), Map.of());
 
         return Map.of("status", "success", "token", token, "user", user);
     }
@@ -68,14 +59,14 @@ public class AuthController {
 
         User user = optUser.get();
         
-        // Check if user has a password (local account) or uses Google auth
-        if (user.getPassword() == null) {
+        // Check if user uses Google auth (provider = "google")
+        if ("google".equals(user.getProvider())) {
             return Map.of("status", "error", "message", "Use Google Sign-In for this account");
         }
         
         if (!encoder.matches(password, user.getPassword()))
             return Map.of("status", "error", "message", "Invalid credentials");
-        String token = jwtService.generateToken(email, Map.of("role", user.getRole().toString()));
+        String token = jwtService.generateToken(email, Map.of());
         return Map.of("status", "success", "token", token, "user", user);
     }
 
@@ -84,7 +75,7 @@ public class AuthController {
         return googleAuthService.verifyGoogleToken(req.get("idToken"))
             .map(user -> Map.of(
                 "status", "success",
-                "token", jwtService.generateToken(user.getEmail(), Map.of("role", user.getRole().toString())),
+                "token", jwtService.generateToken(user.getEmail(), Map.of()),
                 "user", user))
             .orElse(Map.of("status", "error", "message", "Google authentication failed"));
     }
@@ -99,5 +90,18 @@ public class AuthController {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/verify-token")
+    public Map<String, Object> verifyToken(@RequestBody Map<String, String> req) {
+        String token = req.get("token");
+        try {
+            String email = jwtService.extractEmail(token);
+            System.out.println("✓ Token is VALID for email: " + email);
+            return Map.of("status", "valid", "email", email);
+        } catch (Exception e) {
+            System.out.println("✗ Token verification failed: " + e.getMessage());
+            return Map.of("status", "invalid", "error", e.getMessage());
+        }
     }
 }

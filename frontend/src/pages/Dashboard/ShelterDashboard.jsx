@@ -9,7 +9,16 @@ export default function ShelterDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getShelterDashboard().then((res) => setStats(res.data));
+    const fetchStats = async () => {
+      try {
+        const res = await getShelterDashboard();
+        setStats(res.data);
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        setStats({ shelterName: "User", totalPets: 0, adoptedPets: 0, pendingRequests: 0, views: 0, analytics: [] });
+      }
+    };
+    fetchStats();
   }, []);
 
   if (!stats) return <p>Loading...</p>;

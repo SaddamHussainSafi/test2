@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-import api from "../api";
+import api from "../api/apiClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");

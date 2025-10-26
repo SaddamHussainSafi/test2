@@ -1,6 +1,6 @@
 // src/components/AuthForm.js
 import React, { useState } from "react";
-import api from "../api";
+import api from "../api/apiClient";
 import GoogleLoginButton from "./GoogleLoginButton";
 
 const AuthForm = ({ onLogin, isSignup: initialIsSignup = false }) => {

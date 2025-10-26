@@ -32,24 +32,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             System.out.println("Received token: " + token.substring(0, Math.min(20, token.length())) + "...");
+            System.out.println("Token length: " + token.length());
             try {
                 String email = jwtService.extractEmail(token);
                 System.out.println("Extracted email: " + email);
-                if (email != null) {
-                    UserDetails userDetails = User.withUsername(email).password("").authorities(Collections.emptyList()).build();
+                if (email != null && !email.isEmpty()) {
+                    UserDetails userDetails = User.withUsername(email)
+                            .password("")
+                            .authorities(Collections.emptyList())
+                            .build();
                     UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("Authentication set for: " + email);
+                    System.out.println("✓ Authentication successfully set for: " + email);
                 } else {
-                    System.out.println("Email is null");
+                    System.out.println("✗ Email extracted is null or empty");
                 }
+            } catch (io.jsonwebtoken.security.SignatureException e) {
+                System.out.println("✗ Token signature validation failed: " + e.getMessage());
+            } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                System.out.println("✗ Token has expired: " + e.getMessage());
+            } catch (io.jsonwebtoken.MalformedJwtException e) {
+                System.out.println("✗ Token is malformed: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Token invalid: " + e.getMessage());
-                // Invalid token, continue without authentication
+                System.out.println("✗ Token validation failed (" + e.getClass().getSimpleName() + "): " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
-            System.out.println("No Authorization header");
+            System.out.println("No Authorization header found");
         }
 
         filterChain.doFilter(request, response);

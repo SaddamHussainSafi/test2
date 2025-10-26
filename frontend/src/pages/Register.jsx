@@ -2,14 +2,13 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-import api from "../api";
+import api from "../api/apiClient";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("ADOPTER");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { login, user } = useContext(AuthContext);
@@ -33,12 +32,12 @@ export default function Register() {
     setLoading(true);
 
     try {
-      console.log("Attempting registration with:", { name, email, password: "***", role });
-      const response = await api.post("/auth/signup", { name, email, password, role });
+      console.log("Attempting registration with:", { name, email, password: "***" });
+      const response = await api.post("/auth/signup", { name, email, password });
       console.log("Registration response:", response.data);
       if (response.data.status === "success") {
         login(response.data.user, response.data.token);
-        navigate("/redirect");
+        navigate("/dashboard");
       } else {
         setError(response.data.message || "Registration failed");
       }
@@ -84,21 +83,6 @@ export default function Register() {
             required
             style={{ width: "100%", padding: "8px", border: "1px solid #ddd", borderRadius: "4px" }}
           />
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="role" style={{ display: "block", marginBottom: "5px" }}>Role:</label>
-          <select
-            id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", border: "1px solid #ddd", borderRadius: "4px" }}
-          >
-            <option value="">Select Role</option>
-            <option value="ADOPTER">Adopter</option>
-            <option value="SHELTER">Shelter</option>
-          </select>
         </div>
 
         <div style={{ marginBottom: "15px" }}>

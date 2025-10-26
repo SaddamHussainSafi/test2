@@ -1,6 +1,6 @@
 // src/components/GoogleLoginButton.js
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import api from "../api";
+import api from "../api/apiClient";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";

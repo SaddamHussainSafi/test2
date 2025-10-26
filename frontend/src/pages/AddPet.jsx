@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api";
+import api from "../api/apiClient";
 import "../styles/AddPet.css";
 
 const speciesOptions = ["Dog", "Cat", "Bird", "Rabbit", "Fish", "Reptile", "Other"];
@@ -71,14 +71,34 @@ function AddPet() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // DEBUG: Verify token first
+    const token = localStorage.getItem("token");
+    console.log("=== TOKEN VERIFICATION ===");
+    console.log("Token present:", !!token);
+    if (token) {
+      try {
+        const verifyRes = await api.post("/auth/verify-token", { token });
+        console.log("Token verification result:", verifyRes.data);
+        if (verifyRes.data.status !== "valid") {
+          alert("Token is invalid! Please log in again.");
+          return;
+        }
+      } catch (err) {
+        console.error("Token verification error:", err);
+        alert("Could not verify token. Please log in again.");
+        return;
+      }
+    }
+    
     const data = new FormData();
 
-    // Add regular form data
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key !== 'images') {
-        data.append(key, value);
-      }
-    });
+    // Add only the required fields that the backend expects
+    data.append('name', formData.name);
+    data.append('breed', formData.breed);
+    data.append('age', formData.age);
+    data.append('description', formData.description);
+    data.append('status', 'AVAILABLE');
 
     // Add multiple images
     formData.images.forEach((image, index) => {
@@ -86,9 +106,12 @@ function AddPet() {
     });
 
     try {
-      await api.post("/pets", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      console.log("Submitting pet form...");
+      console.log("Token present:", !!token);
+      console.log("Token:", token ? token.substring(0, 50) + "..." : "No token");
+      
+      const response = await api.post("/pets", data);
+      console.log("Pet added successfully:", response.data);
       alert("Pet added successfully!");
       // Reset form
       setFormData({
@@ -106,6 +129,9 @@ function AddPet() {
       setImagePreviews([]);
     } catch (error) {
       console.error("Error adding pet:", error);
+      console.error("Error status:", error.response?.status);
+      console.error("Error data:", error.response?.data);
+      console.error("Error config:", error.config);
       alert("Failed to add pet. Please try again.");
     }
   };
